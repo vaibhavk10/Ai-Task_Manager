@@ -12,24 +12,64 @@ const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
   const { signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      setError("Passwords do not match");
       return;
     }
     setIsLoading(true);
     try {
       await signUp(email, password);
+      setIsSuccess(true);
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
     } catch (error: any) {
       console.error("Signup error:", error);
-      alert(error.message);
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/10 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="relative bg-card rounded-2xl shadow-2xl p-8 border border-border/50 backdrop-blur-sm"
+          >
+            <div className="text-center space-y-4">
+              <div className="flex justify-center">
+                <Sparkles className="w-12 h-12 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold text-primary">Account Created Successfully!</h2>
+              <p className="text-muted-foreground">
+                Please check your email to verify your account. Once verified, you can log in to access your workspace.
+              </p>
+              <Link
+                to="/login"
+                className="mt-4 inline-block w-full"
+              >
+                <Button className="w-full" variant="default">
+                  Go to Login
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/10 flex items-center justify-center p-4">
@@ -109,6 +149,10 @@ const SignUpPage = () => {
                   />
                 </div>
               </div>
+
+              {error && (
+                <p className="text-sm text-red-500 text-center">{error}</p>
+              )}
 
               <Button
                 type="submit"
