@@ -87,8 +87,8 @@ src/
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/task-manager.git
-cd task-manager
+git clone https://github.com/vaibhavk10/Ai-Task_Manager.git
+cd Ai-Task_Manager
 ```
 
 2. Install dependencies
@@ -127,12 +127,20 @@ The application uses Supabase Authentication with the following features:
 
 ### Tasks Table
 ```sql
+-- Drop existing table and policies
+drop policy if exists "Enable read access for all users" on public.tasks;
+drop policy if exists "Enable insert access for all users" on public.tasks;
+drop policy if exists "Enable update access for all users" on public.tasks;
+drop policy if exists "Enable delete access for all users" on public.tasks;
+drop table if exists public.tasks;
+
+-- Create the tasks table with the updated structure
 create table public.tasks (
     id uuid default gen_random_uuid() primary key,
     title text not null,
     description text not null,
-    priority text not null,
-    status text not null default 'todo',
+    priority text not null check (priority in ('low', 'medium', 'high')),
+    status text not null default 'todo' check (status in ('todo', 'in_progress', 'in_review', 'done')),
     due_date timestamp with time zone not null,
     estimated_time text,
     assignee_name text not null,
@@ -141,10 +149,63 @@ create table public.tasks (
     tags text[] default array[]::text[],
     subtasks jsonb default '[]'::jsonb,
     user_id text not null,
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Enable RLS but allow all operations for now
+alter table public.tasks enable row level security;
+
+-- Create policies that allow all operations for everyone
+create policy "Enable read access for all users" 
+on public.tasks for select 
+using (true);
+
+create policy "Enable insert access for all users" 
+on public.tasks for insert 
+with check (true);
+
+create policy "Enable update access for all users" 
+on public.tasks for update 
+using (true);
+
+create policy "Enable delete access for all users" 
+on public.tasks for delete 
+using (true);
+
+-- Grant access to authenticated and anon users
+grant all on public.tasks to authenticated, anon;
+
+-- Insert a test task to verify everything works
+insert into public.tasks (
+    title,
+    description,
+    priority,
+    status,
+    due_date,
+    estimated_time,
+    assignee_name,
+    assignee_avatar,
+    ai_insights,
+    tags,
+    subtasks,
+    user_id
+) values (
+    'Test Task',
+    'This is a test task to verify the table setup',
+    'medium',
+    'todo',
+    now(),
+    '2 hours',
+    'Test User',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=TestUser',
+    'Test insights',
+    array['test', 'setup'],
+    '[{"title": "Subtask 1", "completed": false}, {"title": "Subtask 2", "completed": true}]',
+    'anonymous'
+) returning *;
 ```
+
 
 ## 🎨 UI Components
 
