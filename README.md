@@ -2,7 +2,7 @@
 
 A modern, intelligent task management system that leverages AI to help users organize, prioritize, and manage their tasks more effectively.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](your-demo-link-here)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](https://vaibhavk1-ai-task-manager.vercel.app/)
 
 ## 🚀 Features
 
@@ -267,7 +267,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-  <a href="your-demo-link-here">
+  <a href="https://vaibhavk1-ai-task-manager.vercel.app/">
     <img src="https://img.shields.io/badge/View-Live%20Demo-blue?style=for-the-badge" alt="Live Demo" />
   </a>
 </div>
